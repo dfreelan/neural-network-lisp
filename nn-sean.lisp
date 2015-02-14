@@ -133,7 +133,8 @@ pretty efficient.  Returns the shuffled version of the list."
   "Subtracts each element in the matrix from scalar, returning a new matrix"
   (map-m #'(lambda (elt) (- scalar elt)) matrix))
 
-
+;;; Useful functions - spa
+(defun sq (n) (* n n))
 
 
 
@@ -150,8 +151,10 @@ pretty efficient.  Returns the shuffled version of the list."
 ;; IMPLEMENT THIS FUNCTION
 ;;  "Returns (as a scalar value) the error between the output and correct vectors"
 (defun net-error (output correct-output)
-		(mapcar '- output correct-output)
-  )
+	(* 1/2 (apply #'+ (mapcar 'sq (mapcar '- correct-output output))))
+;; (1/2)(SIGMA(correct-output - output)^2)
+;;
+;; (mapcar '- output correct-output)
 
 
 ;; a single datum is of the form
