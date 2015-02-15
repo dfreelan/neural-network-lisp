@@ -1,16 +1,37 @@
 ;;; Function Dictionary
 ;;
-;; average (lis)
-;;   "Computes the average over a list of numbers.  Returns 0 if the list length is 0."
+;;  *DEBUG*               *VERIFY*              *A-GOOD-MINIMUM-ERROR*
+;;  DPRINT                SHUFFLE               THROW-ERROR
+;;  VERIFY-EQUAL          VERIFY-MULTIPLICABLE  MAP-M
+;;  TRANSPOSE             MAKE-MATRIX           MAKE-RANDOM-MATRIX
+;;  E                     PRINT-MATRIX          MULTIPLY2
+;;  MULTIPLY              ADD                   E-MULTIPLY
+;;  SUBTRACT              SCALAR-ADD            SCALAR-MULTIPLY
+;;  SUBTRACT-FROM-SCALAR  SQ                    SIGMOID
+;;  NET-ERROR             FORWARD-PROPAGATE     BACK-PROPAGATE
+;;  OPTIONALLY-PRINT      INIT-NEURAL-LAYERS    EXTRACT-INPUT-AND-OUTPUT-SIZES
+;;  NET-BUILD             SIMPLE-GENERALIZATION FULL-DATA-TRAINING
+;;  K-FOLD-VALIDATION     SCALE-LIST            SCALE-DATUM
+;;  CONVERT-DATUM         AVERAGE               TEST-CASES
+;;
+;;
+;; dprint (some-variable &optional (additional-message '()))
+;; 	 "Debug Print - useful for allowing error/status messages
+;;	 to be printed while debug=t."
 ;;
 ;; shuffle (lis)
-;;   "Shuffles a list.  Non-destructive.  O(length lis), so pretty efficient.  Returns the shuffled version of the list."
+;;   "Shuffles a list.  Non-destructive.  O(length lis), so pretty efficient.
+;;   Returns the shuffled version of the list."
+;;
+;; average (lis)
+;;   "Computes the average over a list of numbers.  Returns 0 if the list 
+;;   length is 0."
 ;;
 ;; verify-multiplicable (matrix1 matrix2)
 ;;
 ;;
 
-(defparameter *debug* nil)
+(defparameter *debug* t)
 (defparameter *verify* t)
 (defparameter *a-good-minimum-error* 1.0e-9)
 
@@ -322,9 +343,7 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 ;;done k times for different 1/k chunks (and building k different networks).
 ;;The average error among all tested samples is returned.  Don't print any errors,
 ;;and use a modulo of MAX-ITERATIONS."
-(defun k-fold-validation (datum k))
-
-
+(defun k-fold-validation (data k num-hidden-units alpha initial-bounds max-iterations))
 
 
 ;;;; Some useful preprocessing functions
@@ -344,6 +363,8 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 (defun convert-datum (raw-datum)
   "Converts raw datum into column-vector datum of the form that
 can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
+	(dprint "RAW DATUM FOLLOWS:")
+	(dprint raw-datum)
   (mapcar #'(lambda (datum)
 	      (mapcar #'(lambda (vec)
 			  (mapcar #'list vec))
@@ -411,9 +432,13 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 
 ;;main?
 (setf *debug* t)
+(print "******** STARTING TEST CASES **********")
 (test-cases)
+(print "******** STARTING FULL-DATA-TRAINING **********")
 (print (full-data-training (convert-datum *xor*) 4 .2 1 1))
+(print "******** STARTING NET-BUILD **********")
 (print (net-build (convert-datum *xor*) 4 .2 9 90 2))
+(print "******** STARTING FORWARD-PROPOGATE **********")
 (print (forward-propagate (dprint (first (first (convert-datum *xor*))) "CONVERTED-DATA") (net-build (convert-datum *xor*) 3 .2 9 90 2)))
 
 (print "HELLO: here's a full output")
