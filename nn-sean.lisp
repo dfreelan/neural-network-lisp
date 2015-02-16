@@ -220,9 +220,19 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 (defun back-propagate (layer-outputs layers desired-output alpha)
   (dprint "BACK-prop desired-output:")
   (dprint desired-output)
-  layers
-  )
-
+	(if layers
+		;;
+		(let ((o (third layer-outputs))
+				  (h (second layer-outputs))
+				  (i (first layer-outputs))
+				  (c (first desired-output))
+				  (W (first layers))
+				  (V (second layers)))
+			(setf odelta (e-multiply (e-multiply (subtract c o) o) (- 1 o)))
+			(setf hdelta (e-multiply (e-multiply h (- 1 h)) (multiply (transpose W) odelta)))
+			(setf W (+ W (e-multiply alpha (multiply odelta (transpose h)))))
+			(setf V (+ V (e-multiply alpha (multiply odelta (transpose i)))))
+			(setf layers (list W V)))))
 
 ;; "If option is t, then prints x, else doesn't print it.
 ;;In any case, returns x"
@@ -431,7 +441,7 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 ;;test cases for each function
 
 ;;main?
-(setf *debug* t)
+;;(setf *debug* t)a ;; also set at top of file
 (print "******** STARTING TEST CASES **********")
 (test-cases)
 (print "******** STARTING FULL-DATA-TRAINING **********")
