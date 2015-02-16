@@ -197,6 +197,8 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 	;;(mapcar 
 	;;(* 1/2 (apply #'+ (mapcar 'sq (mapcar '- correct-output output)))))
 
+
+
 ;; a single datum is of the form
 ;; (--input-column-vector--  -- output-column-vector--)
 ;;
@@ -210,6 +212,7 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 	(dprint "forward propagate:")
 	(dprint input)
 	;; this is recursive purely for the sake of being 'lispy'
+
 	(if layers
 		;;do the multiplication of the first layer, keep popin recursively until....
 		(list input (forward-propagate   (map-m #'sigmoid (multiply (pop layers) input)) layers))
@@ -228,12 +231,19 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
   (dprint desired-output)
 	(if layers
 		;;
-		(let ((o (third layer-outputs))
-				  (h (second layer-outputs))
+		(let ((o (second (second (dprint layer-outputs "supplied layer-outputs"))))
+				  (h (first (second layer-outputs)))
 				  (i (first layer-outputs))
 				  (c (first desired-output))
 				  (W (first layers))
 				  (V (second layers)))
+			(dprint o "o")
+			(dprint h "h")
+			(dprint i  "i")
+			(dprint c "c")
+			(dprint W "W")
+			(dprint V "V")
+
 			(setf odelta (e-multiply (e-multiply (subtract c o) o) (- 1 o)))
 			(setf hdelta (e-multiply (e-multiply h (- 1 h)) (multiply (transpose W) odelta)))
 			(setf W (+ W (e-multiply alpha (multiply odelta (transpose h)))))
