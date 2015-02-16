@@ -171,7 +171,7 @@ pretty efficient.  Returns the shuffled version of the list."
 (defun sq (n) (* n n))
 
 
-
+;;error = .5(tr[c-o] * (c-o))
 
 ;;; Functions you need to implement
 
@@ -189,7 +189,13 @@ pretty efficient.  Returns the shuffled version of the list."
 (defun net-error (output correct-output)
 	"Error Metric - sum of squared differences.
 ERROR = (1/2)(SIGMA(correct-output - output)^2)"
-	(* 1/2 (apply #'+ (mapcar 'sq (mapcar '- correct-output output)))))
+	(setf *debug* t)
+	(let ((error (mapcar #'- (dprint correct-output "here is correct output") (dprint output "here is some output"))))
+		;;(print "hey i made it here")
+		(* 1/2 (first (first (multiply (dprint (list error) "err transpose") (dprint (transpose (list error)) "error")) )))
+	))
+	;;(mapcar 
+	;;(* 1/2 (apply #'+ (mapcar 'sq (mapcar '- correct-output output)))))
 
 ;; a single datum is of the form
 ;; (--input-column-vector--  -- output-column-vector--)
