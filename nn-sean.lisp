@@ -233,10 +233,10 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 		;;
 		(let ((o (second (second (dprint layer-outputs "supplied layer-outputs"))))
 				  (h (first (second layer-outputs)))
-				  (i (first (first layer-outputs)))
+				  (i (first layer-outputs))
 				  (c desired-output)
-				  (W (first layers))
-				  (V (second layers)))
+				  (W (first layers)) ;; V & W reversed!!! - spa
+				  (V (second layers))) ;; V & W reversed!!! - spa
 			(dprint o "o")
 			(dprint h "h")
 			(dprint i "i")
@@ -244,10 +244,15 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 			(dprint W "W")
 			(dprint V "V")
 
+			(dprint "odelta")
 			(setf odelta (e-multiply (e-multiply (subtract c o) o) (subtract-from-scalar 1 o)))
-			(setf hdelta (e-multiply (e-multiply h (subtract-from-scalar 1 h)) (e-multiply (transpose W) odelta)))
-			(setf W (add W (e-multiply alpha (multiply odelta (transpose h)))))
-			(setf V (add V (e-multiply alpha (multiply odelta (transpose i)))))
+			(dprint "hdelta")
+			(setf hdelta (e-multiply (e-multiply h (subtract-from-scalar 1 h)) (multiply (transpose V) odelta)))
+			(dprint "V")
+			(setf V (add V (scalar-multiply alpha (multiply odelta (transpose h)))))
+			(dprint "W")
+			(setf W (add W (scalar-multiply alpha (multiply hdelta (transpose i)))))
+			(dprint "layers")
 			(setf layers (list W V)))))
 
 ;; "If option is t, then prints x, else doesn't print it.
