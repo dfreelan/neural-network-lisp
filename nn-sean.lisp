@@ -197,8 +197,6 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 	;;(mapcar 
 	;;(* 1/2 (apply #'+ (mapcar 'sq (mapcar '- correct-output output)))))
 
-
-
 ;; a single datum is of the form
 ;; (--input-column-vector--  -- output-column-vector--)
 ;;
@@ -244,16 +242,16 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 			(dprint W "W")
 			(dprint V "V")
 
-			(dprint "odelta")
 			(setf odelta (e-multiply (e-multiply (subtract c o) o) (subtract-from-scalar 1 o)))
-			(dprint "hdelta")
+			(dprint odelta "odelta")
 			(setf hdelta (e-multiply (e-multiply h (subtract-from-scalar 1 h)) (multiply (transpose V) odelta)))
-			(dprint "V")
+			(dprint hdelta "hdelta")
 			(setf V (add V (scalar-multiply alpha (multiply odelta (transpose h)))))
-			(dprint "W")
+			(dprint V "V")
 			(setf W (add W (scalar-multiply alpha (multiply hdelta (transpose i)))))
-			(dprint "layers")
+			(dprint W "W")
 			(setf layers (list W V)))))
+			(dprint "layers")
 
 ;; "If option is t, then prints x, else doesn't print it.
 ;;In any case, returns x"
@@ -462,15 +460,17 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 ;;test cases for each function
 
 ;;main?
-;;(setf *debug* t)a ;; also set at top of file
-(print "******** STARTING TEST CASES **********")
+(dprint "******** STARTING TEST CASES **********")
 (test-cases)
-(print "******** STARTING FULL-DATA-TRAINING **********")
-(print (full-data-training (convert-datum *xor*) 4 .2 1 1))
-(print "******** STARTING NET-BUILD **********")
-(print (net-build (convert-datum *xor*) 4 .2 9 90 2))
-(print "******** STARTING FORWARD-PROPOGATE **********")
-(print (forward-propagate (dprint (first (first (convert-datum *xor*))) "CONVERTED-DATA") (net-build (convert-datum *xor*) 3 .2 9 90 2)))
+(dprint "*xor* shuffle")
+(shuffle *xor*)
+;;;These seemed to be repeated up in test cases ... 
+;;(print "******** STARTING FULL-DATA-TRAINING **********")
+;;(print (full-data-training (convert-datum *xor*) 4 .2 1 1))
+;;(print "******** STARTING NET-BUILD **********")
+;;(print (net-build (convert-datum *xor*) 4 .2 9 90 2))
+;;(print "******** STARTING FORWARD-PROPOGATE **********")
+;;(print (forward-propagate (dprint (first (first (convert-datum *xor*))) "CONVERTED-DATA") (net-build (convert-datum *xor*) 3 .2 9 90 2)))
 
-(print "HELLO: here's a full output")
-(print (full-data-training (convert-datum *xor*) 4 .2 1 1))
+(dprint "HELLO: this is the end. Goodbye.")
+;;(print (full-data-training (convert-datum *xor*) 4 .2 1 1))
