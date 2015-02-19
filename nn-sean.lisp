@@ -244,7 +244,7 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 
 			(setf odelta (e-multiply (e-multiply (subtract c o) o) (subtract-from-scalar 1 o)))
 			(dprint odelta "odelta")
-			(setf hdelta (e-multiply (e-multiply h (subtract-from-scalar 1 h)) (multiply (transpose V) odelta)))
+			(setf hdelta (e-multiply (e-multiply h (subtract-from-scalar 1 h)) (multiply (transpose W) odelta)))
 			(dprint hdelta "hdelta")
 			(setf W (add W (scalar-multiply alpha (multiply odelta (transpose h)))))
 			(dprint W "W")
@@ -356,11 +356,12 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 	(let ((layers (net-build datum num-hidden-units alpha initial-bounds max-iterations 1)))
 		(loop for i from 1 to max-iterations do(progn
 			 (shuffle datum)
+			 (dprint i "looping:")
 			 
-			(loop for a from 1 to (- (length datum) 1) do(progn
-				(let ((layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))
-					(setf layers (back-propagate 
-						(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a datum)) alpha))))
+			 (loop for a from 1 to (- (length datum) 1) do(progn
+				 (let ((layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))
+					 (setf layers (back-propagate 
+					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a datum)) alpha))))
 )))))
 
 
@@ -419,14 +420,14 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 		(print "NET-ERRROR: output should be (-3 -1 1 3)")
 		(print (net-error '(1 2 3 4) '(4 3 2 1)))
 		(print "NET-BUILD: output should be: ((4x3 matrix) (4*1 matrix)) with values between -9 and 9. this represents 4 hidden nodes, 3 inputs, and 1 output")
-		(print (net-build (convert-datum *xor*) 4 .2 9 90 2))
+		(print (net-build (convert-datum *nand*) 4 .2 9 90 2))
 		(print "FORWARD-PROPAGATE: should return values from each layer so ((input vector) (some-hidden-layer-vector) (answer-vector))")
 		
 		;;(first (first data)) gets the first set of input. (first (second data)) would get the first output set
-		(print (forward-propagate (first (first (convert-datum *xor*))) (net-build (convert-datum *xor*) 3 .2 9 90 2)))
+		(print (forward-propagate (first (first (convert-datum *nand*))) (net-build (convert-datum *nand*) 3 .2 9 90 2)))
 		
 		(print "full data training test")
-		(print (full-data-training (convert-datum *xor*) 4 .2 1 1))
+		(print (full-data-training (convert-datum *nand*) 4 .2 1 25))
 		;;set the debug state to whatever it was before i set it to nil
 		(setf *debug* temp)))
 
@@ -462,8 +463,8 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 ;;main?
 (dprint "******** STARTING TEST CASES **********")
 (test-cases)
-(dprint "*xor* shuffle")
-(shuffle *xor*)
+(dprint "*nand* shuffle")
+(shuffle *nand*)
 ;;;These seemed to be repeated up in test cases ... 
 ;;(print "******** STARTING FULL-DATA-TRAINING **********")
 ;;(print (full-data-training (convert-datum *xor*) 4 .2 1 1))
