@@ -427,7 +427,7 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 		(print (forward-propagate (first (first (convert-datum *nand*))) (net-build (convert-datum *nand*) 3 .2 9 90 2)))
 		
 		(print "full data training test")
-		(print (full-data-training (convert-datum *nand*) 4 .2 1 25))
+		(print (full-data-training (convert-datum *nand*) 4 .2 1 1))
 		;;set the debug state to whatever it was before i set it to nil
 		(setf *debug* temp)))
 
