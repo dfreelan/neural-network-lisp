@@ -344,7 +344,30 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 ;;of the datum, then tests generalization on the second half, returning
 ;;the average error among the samples in the second half.  Don't print any errors,
 ;;and use a modulo of MAX-ITERATIONS."
-(defun simple-generalization (datum num-hidden-units alpha initial-bounds max-iterations))
+(defun simple-generalization (datum num-hidden-units alpha initial-bounds max-iterations)
+	;;(print (forward-propagate (first (first (convert-datum *xor*))) (net-build (convert-datum *xor*) 3 .2 9 90 2)))
+	;;net-build (datum num-hidden-units alpha initial-bounds max-iterations modulo &optional print-all-errors)
+	;;(setf *debug* t)
+	(let ((total-error 0) (layers (net-build datum num-hidden-units alpha initial-bounds max-iterations 1)))
+		(loop for i from 1 to max-iterations do(progn
+			(setf total-error 0) 
+			(shuffle datum)
+			 (dprint i "looping:")
+			 ;;train on half the data
+			 (loop for a from 1 to (/ (- (length datum) 1) 2) do(progn
+				 (let ( (layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))
+					(dprint (setf layers (back-propagate 
+					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a datum)) alpha)) "resulting layers after back-prop")
+					
+					
+				)))))
+	(loop for a from (/ (- (length datum) 1) 2) to  (- (length datum) 1)  do(progn
+				 (let ( (layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))	
+					(dprint (setf total-error (+ total-error (net-error (first (second (second layer-outputs))) (first (second (nth a datum)))))) "intermediate total error accumulating: simple-general") 
+					
+				)))
+	(/ total-error (length datum))	)
+)
  	
 	;;need to get num inputs, num outputs from datum.
 	;;let layer-datum 
@@ -433,6 +456,10 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 		
 		(print "full data training test, should print out final average error hopefully close to zero")
 		(print (full-data-training (convert-datum *voting-records*) 4 .2 1 1000))
+		
+		(print "simple-general training test, should print out final average error hopefully close to zero")
+		(print (simple-generalization (convert-datum *voting-records*) 4 .2 1 1000))
+		
 		;;set the debug state to whatever it was before i set it to nil
 		(setf *debug* temp)))
 
