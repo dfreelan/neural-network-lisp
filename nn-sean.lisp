@@ -357,17 +357,13 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 			 (loop for a from 1 to (/ (- (length datum) 1) 2) do(progn
 				 (let ( (layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))
 					(dprint (setf layers (back-propagate 
-					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a datum)) alpha)) "resulting layers after back-prop")
-					
-					
-				)))))
-	(loop for a from (/ (- (length datum) 1) 2) to  (- (length datum) 1)  do(progn
+					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a datum)) alpha)) "resulting layers after back-prop"))))))
+
+		(loop for a from (+ (/ (- (length datum) 1) 2) 1) to  (- (length datum) 1)  do(progn
 				 (let ( (layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))	
-					(dprint (setf total-error (+ total-error (net-error (first (second (second layer-outputs))) (first (second (nth a datum)))))) "intermediate total error accumulating: simple-general") 
-					
-				)))
-	(/ total-error (length datum))	)
-)
+					(dprint (setf total-error (+ total-error (net-error (first (second (second layer-outputs))) (first (second (nth a datum)))))) "intermediate total error accumulating: simple-general"))))
+		
+		(/ total-error (length datum))))
  	
 	;;need to get num inputs, num outputs from datum.
 	;;let layer-datum 
