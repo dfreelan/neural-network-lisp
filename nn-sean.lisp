@@ -189,7 +189,7 @@ pretty efficient.  Returns the shuffled version of the list."
 (defun net-error (output correct-output)
 	"Error Metric - sum of squared differences.
 ERROR = (1/2)(SIGMA(correct-output - output)^2)"
-	(setf *debug* t)
+	;;(setf *debug* t)
 	(let ((error (mapcar #'- (dprint correct-output "here is correct output") (dprint output "here is some output"))))
 		;;(print "hey i made it here")
 		(* 1/2 (first (first (multiply (dprint (list error) "err transpose") (dprint (transpose (list error)) "error")) )))
@@ -229,7 +229,7 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
   (dprint desired-output)
 	(if layers
 		;;
-		(let ((o (second (second (dprint layer-outputs "supplied layer-outputs"))))
+		(let ((o (second (second layer-outputs)))
 				  (h (first (second layer-outputs)))
 				  (i (first layer-outputs))
 				  (c desired-output)
@@ -239,19 +239,19 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 			(dprint h "h")
 			(dprint i "i")
 			(dprint c "c")
-			(dprint W "W")
-			(dprint V "V")
+			(dprint W "W before")
+			(dprint V "V before")
 
 			(setf odelta (e-multiply (e-multiply (subtract c o) o) (subtract-from-scalar 1 o)))
 			(dprint odelta "odelta")
 			(setf hdelta (e-multiply (e-multiply h (subtract-from-scalar 1 h)) (multiply (transpose W) odelta)))
 			(dprint hdelta "hdelta")
 			(setf W (add W (scalar-multiply alpha (multiply odelta (transpose h)))))
-			(dprint W "W")
+			(dprint W "W after ")
 			(setf V (add V (scalar-multiply alpha (multiply hdelta (transpose i)))))
-			(dprint V "V")
+			(dprint V "V after ")
 			(setf layers (list V W))))) ;; V & W reversed!!! - spa
-			(dprint "layers")
+			
 
 ;; "If option is t, then prints x, else doesn't print it.
 ;;In any case, returns x"
@@ -352,17 +352,21 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 	
 	;;(print (forward-propagate (first (first (convert-datum *xor*))) (net-build (convert-datum *xor*) 3 .2 9 90 2)))
 	;;net-build (datum num-hidden-units alpha initial-bounds max-iterations modulo &optional print-all-errors)
-
-	(let ((layers (net-build datum num-hidden-units alpha initial-bounds max-iterations 1)))
+	;;(setf *debug* t)
+	(let ((total-error 0) (layers (net-build datum num-hidden-units alpha initial-bounds max-iterations 1)))
 		(loop for i from 1 to max-iterations do(progn
 			 (shuffle datum)
 			 (dprint i "looping:")
 			 
 			 (loop for a from 1 to (- (length datum) 1) do(progn
-				 (let ((layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))
-					 (setf layers (back-propagate 
-					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a datum)) alpha))))
-)))))
+				 (let ( (layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))
+					(dprint (setf 	layers (back-propagate 
+					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a datum)) alpha)) "resulting layers after back-prop")
+					
+					(dprint (setf total-error (+ total-error (net-error (second (second layer-outputs)) (second (nth a datum))))) "intermediate total error accumulating") 
+					
+				)))))
+	(/ total-error (length datum))	))
 
 
 
@@ -420,14 +424,14 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 		(print "NET-ERRROR: output should be (-3 -1 1 3)")
 		(print (net-error '(1 2 3 4) '(4 3 2 1)))
 		(print "NET-BUILD: output should be: ((4x3 matrix) (4*1 matrix)) with values between -9 and 9. this represents 4 hidden nodes, 3 inputs, and 1 output")
-		(print (net-build (convert-datum *nand*) 4 .2 9 90 2))
+		(print (net-build (convert-datum *nand*) 4 .2 1 90 2))
 		(print "FORWARD-PROPAGATE: should return values from each layer so ((input vector) (some-hidden-layer-vector) (answer-vector))")
 		
 		;;(first (first data)) gets the first set of input. (first (second data)) would get the first output set
 		(print (forward-propagate (first (first (convert-datum *nand*))) (net-build (convert-datum *nand*) 3 .2 9 90 2)))
 		
-		(print "full data training test")
-		(print (full-data-training (convert-datum *nand*) 4 .2 1 25))
+		(print "full data training test, should print out final average error hopefully close to zero")
+		(print (full-data-training (convert-datum *nand*) 4 .2 1 1))
 		;;set the debug state to whatever it was before i set it to nil
 		(setf *debug* temp)))
 
@@ -472,6 +476,9 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 ;;(print (net-build (convert-datum *xor*) 4 .2 9 90 2))
 ;;(print "******** STARTING FORWARD-PROPOGATE **********")
 ;;(print (forward-propagate (dprint (first (first (convert-datum *xor*))) "CONVERTED-DATA") (net-build (convert-datum *xor*) 3 .2 9 90 2)))
+
+;;(defun back-propagate (layer-outputs layers desired-output alpha))
+
 
 (dprint "HELLO: this is the end. Goodbye.")
 ;;(print (full-data-training (convert-datum *xor*) 4 .2 1 1))
