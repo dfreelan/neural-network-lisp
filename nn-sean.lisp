@@ -355,15 +355,16 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 	;;(setf *debug* t)
 	(let ((total-error 0) (layers (net-build datum num-hidden-units alpha initial-bounds max-iterations 1)))
 		(loop for i from 1 to max-iterations do(progn
-			 (shuffle datum)
+			(setf total-error 0) 
+			(shuffle datum)
 			 (dprint i "looping:")
 			 
 			 (loop for a from 1 to (- (length datum) 1) do(progn
 				 (let ( (layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))
-					(dprint (setf 	layers (back-propagate 
+					(dprint (setf layers (back-propagate 
 					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a datum)) alpha)) "resulting layers after back-prop")
 					
-					(dprint (setf total-error (+ total-error (net-error (second (second layer-outputs)) (second (nth a datum))))) "intermediate total error accumulating") 
+					(dprint (setf total-error (+ total-error (net-error (first (second (second layer-outputs))) (first (second (nth a datum)))))) "intermediate total error accumulating") 
 					
 				)))))
 	(/ total-error (length datum))	))
@@ -431,7 +432,7 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 		(print (forward-propagate (first (first (convert-datum *nand*))) (net-build (convert-datum *nand*) 3 .2 9 90 2)))
 		
 		(print "full data training test, should print out final average error hopefully close to zero")
-		(print (full-data-training (convert-datum *nand*) 4 .2 1 1))
+		(print (full-data-training (convert-datum *voting-records*) 4 .2 1 1000))
 		;;set the debug state to whatever it was before i set it to nil
 		(setf *debug* temp)))
 
