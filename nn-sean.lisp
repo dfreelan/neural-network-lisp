@@ -30,7 +30,7 @@
 ;; verify-multiplicable (matrix1 matrix2)
 ;;
 ;;
-
+(setf *random-state* (make-random-state t))
 (defparameter *debug* t)
 (defparameter *verify* t)
 (defparameter *a-good-minimum-error* 1.0e-9)
@@ -194,6 +194,7 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 		;;(print "hey i made it here")
 		(* 1/2 (first (first (multiply (dprint (list error) "err transpose") (dprint (transpose (list error)) "error")) )))
 	))
+	
 	;;(mapcar 
 	;;(* 1/2 (apply #'+ (mapcar 'sq (mapcar '- correct-output output)))))
 
@@ -329,8 +330,13 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 		(dprint i-o-size "i-o-size is:")
 		
 		(init-neural-layers num-hidden-units (first i-o-size) 1 (second i-o-size) initial-bounds)))
-
-
+(defvar *all-errors* '())
+(defun save-current-total-error (layers testing-data)
+	(let ((total-error 0))
+		(loop for a from 0 to  (- (length testing-data) 1)  do(progn
+			 (let ((layer-outputs (forward-propagate (first (nth a (dprint testing-data "hey this is the dataset i'm grabbing the nth of:"))) layers )))	
+				(dprint (setf total-error (+ total-error (net-error (first (second (second layer-outputs))) (first (second (nth a testing-data)))))) "intermediate total error accumulating: simple-general"))))
+	(setf *all-errors* (append *all-errors* (list total-error)))))
 ;; For this function, you should pass in the datum just like it's defined
 ;; in the example problems below (that is, not in the "column vector" format
 ;; used by NET-BUILD.  Of course, if you need to call NET_BUILD from this function
@@ -352,17 +358,16 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 		(loop for i from 1 to max-iterations do(progn
 			(setf total-error 0) 
 			(shuffle datum)
-			 (dprint i "looping:")
-			 ;;train on half the data
-			 (loop for a from 1 to (/ (- (length datum) 1) 2) do(progn
+			(dprint i "looping:")
+			(save-current-total-error layers (subseq (dprint datum "datum:") (dprint (+ (floor (length datum) 2.0) 1) "lower bound") (dprint (length datum) "upper bound")))
+	 
+			;;train on half the data
+			 (loop for a from 0 to (/ (- (length datum) 1) 2) do(progn
 				 (let ( (layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))
 					(dprint (setf layers (back-propagate 
 					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a datum)) alpha)) "resulting layers after back-prop"))))))
 
-		(loop for a from (+ (/ (- (length datum) 1) 2) 1) to  (- (length datum) 1)  do(progn
-				 (let ( (layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))	
-					(dprint (setf total-error (+ total-error (net-error (first (second (second layer-outputs))) (first (second (nth a datum)))))) "intermediate total error accumulating: simple-general"))))
-		
+		(setf total-error (first (last (save-current-total-error layers (subseq (dprint datum "datum:") (dprint (+ (floor (length datum) 2.0) 1) "lower bound") (dprint (length datum) "upper bound"))))))
 		(/ total-error (length datum))))
  	
 	;;need to get num inputs, num outputs from datum.
@@ -390,7 +395,7 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 					(dprint (setf total-error (+ total-error (net-error (first (second (second layer-outputs))) (first (second (nth a datum)))))) "intermediate total error accumulating") 
 					
 				)))))
-	(/ total-error (length datum))	)
+		(/ total-error (length datum)))
 	(close str))
 
 
@@ -455,11 +460,11 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 		;;(first (first data)) gets the first set of input. (first (second data)) would get the first output set
 		(print (forward-propagate (first (first (convert-datum *nand*))) (net-build (convert-datum *nand*) 3 .2 9 90 2)))
 		
-		(print "full data training test, should print out final average error hopefully close to zero")
-		(print (full-data-training (convert-datum *voting-records*) 4 .2 1 1000))
+	;;	(print "full data training test, should print out final average error hopefully close to zero")
+	;;	(print (full-data-training (convert-datum *voting-records*) 4 .2 1 1000))
 		
 		(print "simple-general training test, should print out final average error hopefully close to zero")
-		(print (simple-generalization (convert-datum *voting-records*) 4 .2 1 1000))
+		(print (simple-generalization (convert-datum *voting-records*) 4 .02 1 1000))
 		
 		;;set the debug state to whatever it was before i set it to nil
 		(setf *debug* temp)))
@@ -494,8 +499,9 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 ;;test cases for each function
 
 ;;main?
+(setf *debug* nil)
 (dprint "******** STARTING TEST CASES **********")
-(test-cases)
+;;(test-cases)
 (dprint "*nand* shuffle")
 (shuffle *nand*)
 ;;;These seemed to be repeated up in test cases ... 
@@ -505,9 +511,26 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 ;;(print (net-build (convert-datum *xor*) 4 .2 9 90 2))
 ;;(print "******** STARTING FORWARD-PROPOGATE **********")
 ;;(print (forward-propagate (dprint (first (first (convert-datum *xor*))) "CONVERTED-DATA") (net-build (convert-datum *xor*) 3 .2 9 90 2)))
+(print *all-errors*)
+(print (format t "blah: ~S ~A"  2 "monkey feet"))
+(print (concatenate 'string "Karl" (format nil "blah~S"  2)))
 
-;;(defun back-propagate (layer-outputs layers desired-output alpha))
+(defparameter neurons 4)
+(loop for alpha in '(.005 .01 .02 .04 .06 .10 .15 .2 .5) do(progn
+	(print alpha)
+	(simple-generalization (convert-datum *voting-records*) neurons .02 1 1000)	
+	(with-open-file (str  (print (format nil "alpha~ANeurons~A.txt" alpha neurons))
+                     :direction :output
+                     :if-exists :supersede
+                     :if-does-not-exist :create)
+  	(format str  "~a" *all-errors*))
+	(print alpha)
 
+))
+	
+  ;;(print "simple-general training test, should print out final average error hopefully close to zero")
+  ;;(print (simple-generalization (convert-datum *voting-records*) 4 .02 1 1000))
+		
 
 (dprint "HELLO: this is the end. Goodbye.")
 ;;(print (full-data-training (convert-datum *xor*) 4 .2 1 1))
