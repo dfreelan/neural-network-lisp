@@ -515,18 +515,19 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 (print (format t "blah: ~S ~A"  2 "monkey feet"))
 (print (concatenate 'string "Karl" (format nil "blah~S"  2)))
 
-(defparameter neurons 4)
-(loop for alpha in '(.005 .01 .02 .04 .06 .10 .15 .2 .5) do(progn
-	(print alpha)
-	(simple-generalization (convert-datum *voting-records*) neurons .02 1 1000)	
-	(with-open-file (str  (print (format nil "alpha~ANeurons~A.txt" alpha neurons))
-                     :direction :output
-                     :if-exists :supersede
-                     :if-does-not-exist :create)
-  	(format str  "~a" *all-errors*))
-	(print alpha)
+(loop for neurons in '(11 12 13) do(progn
+	(loop for alpha in '(.005 .01 .02 .04 .06 .10 .15 .2 .5) do(progn
+		(print alpha)
+		(simple-generalization (convert-datum *voting-records*) neurons alpha 1 10000)	
+		(with-open-file (str  (print (format nil "alpha~ANeurons~A.txt" alpha neurons))
+						 :direction :output
+						 :if-exists :supersede
+						 :if-does-not-exist :create)
+		(format str  "~a" *all-errors*))
+		(setf *all-errors* '())
+		(print alpha)
 
-))
+	))))
 	
   ;;(print "simple-general training test, should print out final average error hopefully close to zero")
   ;;(print (simple-generalization (convert-datum *voting-records*) 4 .02 1 1000))
