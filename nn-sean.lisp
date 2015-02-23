@@ -372,21 +372,26 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 	;;(print (forward-propagate (first (first (convert-datum *xor*))) (net-build (convert-datum *xor*) 3 .2 9 90 2)))
 	;;net-build (datum num-hidden-units alpha initial-bounds max-iterations modulo &optional print-all-errors)
 	;;(setf *debug* t)
-	(let ((total-error 0) (layers (net-build datum num-hidden-units alpha initial-bounds max-iterations 1)))
+	(setf path (make-pathname :name "nn-sean.dat"))
+	(setf str  (open path :direction :output
+									 			:if-exists :supersede))
+	(let ((total-error 0) 
+				(layers (net-build datum num-hidden-units alpha initial-bounds max-iterations 1)))
 		(loop for i from 1 to max-iterations do(progn
 			(setf total-error 0) 
 			(shuffle datum)
 			 (dprint i "looping:")
 			 
 			 (loop for a from 1 to (- (length datum) 1) do(progn
-				 (let ( (layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))
+				 (let ((layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))
 					(dprint (setf layers (back-propagate 
 					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a datum)) alpha)) "resulting layers after back-prop")
-					
+					(format str "~A~%" (net-error (first (second (second layer-outputs))) (first (second (nth a datum))))) ;;there's got to be a better way to format this
 					(dprint (setf total-error (+ total-error (net-error (first (second (second layer-outputs))) (first (second (nth a datum)))))) "intermediate total error accumulating") 
 					
 				)))))
-	(/ total-error (length datum))	))
+	(/ total-error (length datum))	)
+	(close str))
 
 
 
