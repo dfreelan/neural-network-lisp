@@ -8,14 +8,13 @@
 \usepackage{epstopdf}
 \usepackage{pdfpages}
 
-
-
-
+\graphicspath{ {./analysis/graphs/} }
 
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
 \title{Assignment one: Neural networks}
-\author{Steven Arnold and David Freelan}
+\author{Stephen Arnold and David Freelan}
+
 %\date{}                                           % Activate to display a given date or no date
 
 \begin{document}
@@ -36,7 +35,7 @@ One of the interesting results was the behavior of overfitting. There appears to
 
 
 
-\fbox{\includegraphics[page=3,scale=0.4]{./experiments/AlphaNeurons.pdf}}
-
+%\fbox{\includegraphics[page=3,scale=0.4]{./experiments/AlphaNeurons.pdf}}
+\includegraphics[scale=0.4]{{alpha0.1Neurons1-12}.png}
 
 \end{document}  
