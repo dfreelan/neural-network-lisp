@@ -332,7 +332,9 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 		(dprint i-o-size "i-o-size is:")
 		
 		(init-neural-layers num-hidden-units (first i-o-size) 1 (second i-o-size) initial-bounds)))
+
 (defvar *all-errors* '())
+
 (defun save-current-total-error (layers testing-data)
 	(let ((total-error 0))
 		(loop for a from 0 to  (- (length testing-data) 1)  do(progn
@@ -370,7 +372,7 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 					(dprint (setf layers (back-propagate 
 					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a training-set)) alpha)) "resulting layers after back-prop"))))))
 
-		(setf total-error (first (last (save-current-total-error layers testing-set))))
+		(dprint (setf total-error (first (last (save-current-total-error layers testing-set)))) "total error after testing")
 		(/ total-error (length training-set))));;doesnt mean anything right now
  	
 	;;need to get num inputs, num outputs from datum.
@@ -392,8 +394,13 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 			 
 			 (loop for a from 1 to (- (length datum) 1) do(progn
 				 (let ((layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))
-					(dprint (setf layers (back-propagate 
-					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a datum)) alpha)) "resulting layers after back-prop")
+					;;(dprint 
+						(setf layers (back-propagate 
+					 		;;(dprint 
+							  layer-outputs 
+								;;"supplied layer outputs to back-prop:") 
+								layers (second (nth a datum)) alpha))
+						;;"resulting layers after back-prop")
 					(format str "~A~%" (net-error (first (second (second layer-outputs))) (first (second (nth a datum))))) ;;there's got to be a better way to format this
 					(dprint (setf total-error (+ total-error (net-error (first (second (second layer-outputs))) (first (second (nth a datum)))))) "intermediate total error accumulating") 
 					
@@ -447,6 +454,7 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 
 ;;; Load the Test Data from an erternal file === MUCH MORE COVENIENT than leaving it here!
 (load "./nn-test.lisp")
+(defparameter *set* *voting-records*)
 
 
 (defun test-cases ()
@@ -517,12 +525,11 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 (print *all-errors*)
 (print (format t "blah: ~S ~A"  2 "monkey feet"))
 (print (concatenate 'string "Karl" (format nil "blah~S"  2)))
-(setf *set* *voting-records*)
-;;(setf *debug* t)
+(setf *debug* t)
 (loop for neurons in '(6) do(progn
 	(loop for alpha in '(.10) do(progn
 		;;(print alpha)
-		(simple-generalization (subseq (convert-datum *set*) 0 (- (floor (length *set*) 2.0) 1)) (subseq (convert-datum *set*) (floor (length *set*) 2.0) (- (length *set*) 1)) neurons alpha 1 1000)	
+		(simple-generalization (subseq (convert-datum *set*) 0 (- (floor (length *set*) 2.0) 1)) (subseq (convert-datum *set*) (floor (length *set*) 2.0) (- (length *set*) 1)) neurons alpha 1 10)	
 		(with-open-file (str  (print (format nil "new-alpha~ANeurons~A.txt" alpha neurons))
 						 :direction :output
 						 :if-exists :supersede
