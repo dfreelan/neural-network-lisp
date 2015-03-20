@@ -353,8 +353,8 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 ;;the average error among the samples in the second half.  Don't print any errors,
 ;;and use a modulo of MAX-ITERATIONS."
 (defun simple-generalization (training-set testing-set num-hidden-units alpha initial-bounds max-iterations)
-	(dprint training-set "training set:")
-	(dprint testing-set "testing set:")
+	;;(dprint training-set "training set:")
+	;;(dprint testing-set "testing set:")
 	;;(print (forward-propagate (first (first (convert-datum *xor*))) (net-build (convert-datum *xor*) 3 .2 9 90 2)))
 	;;net-build (datum num-hidden-units alpha initial-bounds max-iterations modulo &optional print-all-errors)
 	;;(setf *debug* t)
@@ -518,18 +518,18 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 (print (format t "blah: ~S ~A"  2 "monkey feet"))
 (print (concatenate 'string "Karl" (format nil "blah~S"  2)))
 (setf *set* *voting-records*)
-(setf *debug* t)
+;;(setf *debug* t)
 (loop for neurons in '(6) do(progn
 	(loop for alpha in '(.10) do(progn
-		(print alpha)
-		(simple-generalization (subseq (convert-datum *set*) 0 (floor (length *set*) 2.0)) (subseq (convert-datum *set*) (+ (floor (length *set*) 2.0) 1) (length *set*)) neurons alpha 1 10000)	
-		(with-open-file (str  (print (format nil "alpha~ANeurons~A.txt" alpha neurons))
+		;;(print alpha)
+		(simple-generalization (subseq (convert-datum *set*) 0 (- (floor (length *set*) 2.0) 1)) (subseq (convert-datum *set*) (floor (length *set*) 2.0) (- (length *set*) 1)) neurons alpha 1 1000)	
+		(with-open-file (str  (print (format nil "new-alpha~ANeurons~A.txt" alpha neurons))
 						 :direction :output
 						 :if-exists :supersede
 						 :if-does-not-exist :create)
 		(format str  "~a" *all-errors*))
 		(setf *all-errors* '())
-		(print alpha)
+		;;(print alpha)
 
 	))))
 	
