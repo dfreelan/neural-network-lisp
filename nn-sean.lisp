@@ -209,9 +209,11 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 ;;the datum as input."
 (defun forward-propagate (input layers)
 	(dprint "forward propagate:")
-	(dprint input)
+	
+	(dprint input "input:")
+	(dprint layers "layers:")
 	;; this is recursive purely for the sake of being 'lispy'
-
+	
 	(if layers
 		;;do the multiplication of the first layer, keep popin recursively until....
 		(list input (forward-propagate   (map-m #'sigmoid (multiply (pop layers) input)) layers))
@@ -350,25 +352,26 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 ;;of the datum, then tests generalization on the second half, returning
 ;;the average error among the samples in the second half.  Don't print any errors,
 ;;and use a modulo of MAX-ITERATIONS."
-(defun simple-generalization (datum num-hidden-units alpha initial-bounds max-iterations)
+(defun simple-generalization (training-set testing-set num-hidden-units alpha initial-bounds max-iterations)
+	(dprint training-set "training set:")
+	(dprint testing-set "testing set:")
 	;;(print (forward-propagate (first (first (convert-datum *xor*))) (net-build (convert-datum *xor*) 3 .2 9 90 2)))
 	;;net-build (datum num-hidden-units alpha initial-bounds max-iterations modulo &optional print-all-errors)
 	;;(setf *debug* t)
-	(let ((total-error 0) (layers (net-build datum num-hidden-units alpha initial-bounds max-iterations 1)))
+	(let ((total-error 0) (layers (net-build training-set num-hidden-units alpha initial-bounds max-iterations 1)))
 		(loop for i from 1 to max-iterations do(progn
 			(setf total-error 0) 
-			(shuffle datum)
+			(shuffle training-set)
 			(dprint i "looping:")
-			(save-current-total-error layers (subseq (dprint datum "datum:") (dprint (+ (floor (length datum) 2.0) 1) "lower bound") (dprint (length datum) "upper bound")))
-	 
+			 
 			;;train on half the data
-			 (loop for a from 0 to (/ (- (length datum) 1) 2) do(progn
-				 (let ( (layer-outputs (forward-propagate (first (nth a (dprint datum "hey this is the dataset i'm grabbing the nth of:"))) layers )))
+			 (loop for a from 0 to (- (length training-set) 1) do(progn
+				 (let ( (layer-outputs (forward-propagate (first (nth a (dprint training-set "hey this is the dataset i'm grabbing the nth of:"))) layers )))
 					(dprint (setf layers (back-propagate 
-					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a datum)) alpha)) "resulting layers after back-prop"))))))
+					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a training-set)) alpha)) "resulting layers after back-prop"))))))
 
-		(setf total-error (first (last (save-current-total-error layers (subseq (dprint datum "datum:") (dprint (+ (floor (length datum) 2.0) 1) "lower bound") (dprint (length datum) "upper bound"))))))
-		(/ total-error (length datum))))
+		(setf total-error (first (last (save-current-total-error layers testing-set))))
+		(/ total-error (length training-set))));;doesnt mean anything right now
  	
 	;;need to get num inputs, num outputs from datum.
 	;;let layer-datum 
@@ -463,8 +466,8 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 	;;	(print "full data training test, should print out final average error hopefully close to zero")
 	;;	(print (full-data-training (convert-datum *voting-records*) 4 .2 1 1000))
 		
-		(print "simple-general training test, should print out final average error hopefully close to zero")
-		(print (simple-generalization (convert-datum *voting-records*) 4 .02 1 1000))
+	;;	(print "simple-general training test, should print out final average error hopefully close to zero")
+	;;	(print (simple-generalization (convert-datum *voting-records*) 4 .02 1 1000))
 		
 		;;set the debug state to whatever it was before i set it to nil
 		(setf *debug* temp)))
@@ -514,11 +517,12 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 (print *all-errors*)
 (print (format t "blah: ~S ~A"  2 "monkey feet"))
 (print (concatenate 'string "Karl" (format nil "blah~S"  2)))
-
-(loop for neurons in '(13) do(progn
-	(loop for alpha in '(.10 .15 .2 .5) do(progn
+(setf *set* *voting-records*)
+(setf *debug* t)
+(loop for neurons in '(6) do(progn
+	(loop for alpha in '(.10) do(progn
 		(print alpha)
-		(simple-generalization (convert-datum *voting-records*) neurons alpha 1 10000)	
+		(simple-generalization (subseq (convert-datum *set*) 0 (floor (length *set*) 2.0)) (subseq (convert-datum *set*) (+ (floor (length *set*) 2.0) 1) (length *set*)) neurons alpha 1 10000)	
 		(with-open-file (str  (print (format nil "alpha~ANeurons~A.txt" alpha neurons))
 						 :direction :output
 						 :if-exists :supersede
