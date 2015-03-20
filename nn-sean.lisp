@@ -363,7 +363,8 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 			(setf total-error 0) 
 			(shuffle training-set)
 			(dprint i "looping:")
-			 
+			 (setf total-error (first (last (save-current-total-error layers testing-set))))
+		
 			;;train on half the data
 			 (loop for a from 0 to (- (length training-set) 1) do(progn
 				 (let ( (layer-outputs (forward-propagate (first (nth a (dprint training-set "hey this is the dataset i'm grabbing the nth of:"))) layers )))
