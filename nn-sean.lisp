@@ -338,9 +338,9 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 (defun save-current-total-error (layers testing-data)
 	(let ((total-error 0))
 		(loop for a from 0 to  (- (length testing-data) 1)  do(progn
-			 (let ((layer-outputs (forward-propagate (first (nth a (dprint testing-data "hey this is the dataset i'm grabbing the nth of:"))) layers )))	
+			 (let ((layer-outputs (forward-propagate (first (nth a testing-data)) layers )))	
 				(dprint (setf total-error (+ total-error (net-error (first (second (second layer-outputs))) (first (second (nth a testing-data)))))) "intermediate total error accumulating: simple-general"))))
-	(setf *all-errors* (append *all-errors* (list total-error)))))
+	(dprint (setf *all-errors* (append *all-errors* (list total-error))) "growing *all-errors* :")))
 ;; For this function, you should pass in the datum just like it's defined
 ;; in the example problems below (that is, not in the "column vector" format
 ;; used by NET-BUILD.  Of course, if you need to call NET_BUILD from this function
@@ -368,7 +368,7 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 			 
 			;;train on half the data
 			 (loop for a from 0 to (- (length training-set) 1) do(progn
-				 (let ( (layer-outputs (forward-propagate (first (nth a (dprint training-set "hey this is the dataset i'm grabbing the nth of:"))) layers )))
+				 (let ( (layer-outputs (forward-propagate (first (nth a training-set )) layers )))
 					(dprint (setf layers (back-propagate 
 					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a training-set)) alpha)) "resulting layers after back-prop"))))))
 
@@ -454,7 +454,7 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 
 ;;; Load the Test Data from an erternal file === MUCH MORE COVENIENT than leaving it here!
 (load "./nn-test.lisp")
-(defparameter *set* *voting-records*)
+(defparameter *set* *nand*)
 
 
 (defun test-cases ()
