@@ -1,0 +1,49 @@
+\title{Assignment Two: Reinforcement Learning}
+\author{
+        Stephen Arnold \\
+        Department of Computer Science\\
+        George Mason University\\
+            \and
+        David Feelan\\
+        Department of Computer Science\\
+        George Mason University\\
+}
+\date{\today}
+
+\documentclass[11pt,letterpaper]{article}
+%\usepackage[letterpaper,margin=0.75in]{geometry}
+\usepackage{graphicx}
+
+%\graphicspath{ {./analysis/graphs/} }
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+%\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+Our neural network assignment went a little beyond the default assignment. We really wanted to know: what really happens when you change alpha, and when you change the number of neurons? As a result, we ended up re-discovering a method of training, the use of a validation set.
+\subsection{Motives} One of the topics discussed in class was overfitting and under fitting. We want to visualize this as its happening on a real dataset. We have two variables we're interested in: number of neurons, and the value of alpha. Alpha is the learning rate of the neural net, and the number of neurons is the number of neurons in the hidden layer of the network.  Both of these settings should have some effect on the fitting of the dataset.
+\section{Experimental procedure}
+After training on half the data set (Simple Generalization method, as discussed in the assignment), we would get the error on the testing set. 
+All tests were done on the supplied Wine training set using the the Simple Generalization method discussed in the homework. 
+\section{Results}
+
+\section{Conclusion}
+One of the interesting results was the behavior of overfitting. There appears to be a period of time in each graph where they hit the min, usually within the first 1000 iterations, then they mostly get worse after that. Given this insight, it is our opinion that if you had a validation set, you could simply train until your validation set starts to overfit, and immediately stop training. However, while we tested with a wide range of alphas and hidden neurons, we only tested it with one problem set. In the future to get a better idea of when to stop training, we would try a larger subset of problems and see if the same result happens.
+
+
+
+%\fbox{\includegraphics[page=3,scale=0.4]{./experiments/AlphaNeurons.pdf}}
+%\includegraphics[scale=0.4]{{alpha0.1Neurons1-12}.png}
+
+\end{document}  

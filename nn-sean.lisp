@@ -365,7 +365,7 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 			(setf total-error 0) 
 			(shuffle training-set)
 			(dprint i "looping:")
-			 (setf total-error (first (last (save-current-total-error layers testing-set))))
+			 (setf total-error (first (last (save-current-total-error layers training-set))))
 		
 			;;train on half the data
 			 (loop for a from 0 to (- (length training-set) 1) do(progn
@@ -373,7 +373,7 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 					(dprint (setf layers (back-propagate 
 					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a training-set)) alpha)) "resulting layers after back-prop"))))))
 
-		(dprint (setf total-error (first (last (save-current-total-error layers testing-set)))) "total error after testing")
+		(dprint (setf total-error (first (last (save-current-total-error layers training-set)))) "total error after testing")
 		(/ total-error (length training-set))));;doesnt mean anything right now
  	
 	;;need to get num inputs, num outputs from datum.
@@ -455,7 +455,7 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 
 ;;; Load the Test Data from an erternal file === MUCH MORE COVENIENT than leaving it here!
 (load "./nn-test.lisp")
-(defparameter *set* *nand*)
+(defparameter *set* *voting-records*)
 
 
 (defun test-cases ()
@@ -526,11 +526,11 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 (print *all-errors*)
 (print (format t "blah: ~S ~A"  2 "monkey feet"))
 (print (concatenate 'string "Karl" (format nil "blah~S"  2)))
-(setf *debug* t)
+;;;(setf *debug* t)
 (loop for neurons in '(6) do(progn
 	(loop for alpha in '(.10) do(progn
 		;;(print alpha)
-		(simple-generalization (subseq (convert-datum *set*) 0 (- (floor (length *set*) 2.0) 1)) (subseq (convert-datum *set*) (floor (length *set*) 2.0) (- (length *set*) 1)) neurons alpha 1 10)	
+		(simple-generalization (subseq (convert-datum *set*) 0 (- (floor (length *set*) 2.0) 1)) (subseq (convert-datum *set*) (floor (length *set*) 2.0) (- (length *set*) 1)) neurons alpha 1 10000)	
 		(with-open-file (str  (print (format nil "new-alpha~ANeurons~A.txt" alpha neurons))
 						 :direction :output
 						 :if-exists :supersede
