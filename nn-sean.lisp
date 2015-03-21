@@ -334,13 +334,31 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 		(init-neural-layers num-hidden-units (first i-o-size) 1 (second i-o-size) initial-bounds)))
 
 (defvar *all-errors* '())
+(defvar *all-classification-errors* '())
+(defun do-statistics (layers testing-data)
+	(save-current-classification-error layers testing-data)
+	(save-current-total-error layers testing-data))
+(defun save-current-classification-error (layers testing-data)
+	(let ((total-incorrect 0))
+		(loop for a from 0 to  (- (length testing-data) 1)  do(progn
+			 (let ((layer-outputs (forward-propagate (first (nth a testing-data)) layers )))	
+				(setf nn-answer (first (first (second (second layer-outputs)))))
+				(setf correct-answer (first (first (second (nth a testing-data)))))
+				
+				
+				(if (> (abs (- nn-answer correct-answer)) .39)
+					(setf total-incorrect (+ total-incorrect 1))
+					nil
+				))))
+	(dprint (setf *all-classification-errors* (append *all-classification-errors* (list (float (/ total-incorrect  (length testing-data)))))) "growing *all-errors* :")))
+;;
 
 (defun save-current-total-error (layers testing-data)
 	(let ((total-error 0))
 		(loop for a from 0 to  (- (length testing-data) 1)  do(progn
 			 (let ((layer-outputs (forward-propagate (first (nth a testing-data)) layers )))	
 				(dprint (setf total-error (+ total-error (net-error (first (second (second layer-outputs))) (first (second (nth a testing-data)))))) "intermediate total error accumulating: simple-general"))))
-	(dprint (setf *all-errors* (append *all-errors* (list total-error))) "growing *all-errors* :")))
+	(dprint (setf *all-errors* (append *all-errors* (list (float (/ total-error (length testing-data)))))) "growing *all-errors* :")))
 ;; For this function, you should pass in the datum just like it's defined
 ;; in the example problems below (that is, not in the "column vector" format
 ;; used by NET-BUILD.  Of course, if you need to call NET_BUILD from this function
@@ -362,10 +380,12 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 	;;(setf *debug* t)
 	(let ((total-error 0) (layers (net-build training-set num-hidden-units alpha initial-bounds max-iterations 1)))
 		(loop for i from 1 to max-iterations do(progn
+			;;(print i )
+			;;(print max-iterations)
 			(setf total-error 0) 
 			(shuffle training-set)
 			(dprint i "looping:")
-			 (setf total-error (first (last (save-current-total-error layers training-set))))
+			 (setf total-error (first (last (do-statistics layers testing-set))))
 		
 			;;train on half the data
 			 (loop for a from 0 to (- (length training-set) 1) do(progn
@@ -373,7 +393,7 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 					(dprint (setf layers (back-propagate 
 					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a training-set)) alpha)) "resulting layers after back-prop"))))))
 
-		(dprint (setf total-error (first (last (save-current-total-error layers training-set)))) "total error after testing")
+		(dprint (setf total-error (first (last (do-statistics layers testing-set)))) "total error after testing")
 		(/ total-error (length training-set))));;doesnt mean anything right now
  	
 	;;need to get num inputs, num outputs from datum.
@@ -526,17 +546,30 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 (print *all-errors*)
 (print (format t "blah: ~S ~A"  2 "monkey feet"))
 (print (concatenate 'string "Karl" (format nil "blah~S"  2)))
-;;;(setf *debug* t)
+(setf *debug* nil)
+
 (loop for neurons in '(6) do(progn
 	(loop for alpha in '(.10) do(progn
 		;;(print alpha)
-		(simple-generalization (subseq (convert-datum *set*) 0 (- (floor (length *set*) 2.0) 1)) (subseq (convert-datum *set*) (floor (length *set*) 2.0) (- (length *set*) 1)) neurons alpha 1 10000)	
-		(with-open-file (str  (print (format nil "new-alpha~ANeurons~A.txt" alpha neurons))
+		(dotimes (i 50)
+			(simple-generalization (subseq (convert-datum *set*) 0 (- (floor (length *set*) 2.0) 1)) (subseq (convert-datum *set*) (floor (length *set*) 2.0) (- (length *set*) 1)) neurons alpha 1 1000)
+			(print "getting a file out")	
+			(with-open-file (str  (print (format nil "AvgErr-alpha~ANeurons~ATrial~A.txt" alpha neurons i))
 						 :direction :output
 						 :if-exists :supersede
 						 :if-does-not-exist :create)
-		(format str  "~a" *all-errors*))
-		(setf *all-errors* '())
+			(format str  "~a" *all-errors*))
+			
+			(with-open-file (str  (print (format nil "Classification-alpha~ANeurons~ATrial~A.txt" alpha neurons i))
+						 :direction :output
+						 :if-exists :supersede
+						 :if-does-not-exist :create)
+			
+			(format str  "~a" *all-classification-errors*))
+			
+			(setf *all-classification-errors* '())
+			
+			(setf *all-errors* '()))
 		;;(print alpha)
 
 	))))
@@ -546,4 +579,5 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 		
 
 (dprint "HELLO: this is the end. Goodbye.")
+
 ;;(print (full-data-training (convert-datum *xor*) 4 .2 1 1))
