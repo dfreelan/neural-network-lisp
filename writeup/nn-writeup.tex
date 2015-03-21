@@ -1,34 +1,41 @@
-\documentclass[11pt]{amsart}
-\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
-\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
-%\geometry{landscape}                % Activate for for rotated page geometry
-%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\title{Assignment One: Neural Networks}
+\author{
+        Stephen Arnold \\
+        Department of Computer Science\\
+        George Mason University\\
+            \and
+        David Feelan\\
+        Department of Computer Science\\
+        George Mason University\\
+}
+\date{\today}
+
+\documentclass[11pt,letterpaper]{article}
+%\usepackage[letterpaper,margin=0.75in]{geometry}
 \usepackage{graphicx}
-\usepackage{amssymb}
-\usepackage{epstopdf}
-\usepackage{pdfpages}
 
-\graphicspath{ {./analysis/graphs/} }
-
+%\graphicspath{ {./analysis/graphs/} }
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
-\title{Assignment one: Neural networks}
-\author{Stephen Arnold and David Freelan}
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
 
-%\date{}                                           % Activate to display a given date or no date
+%\setlength\parindent{0pt} % Removes all indentation from paragraphs
 
 \begin{document}
-
 \maketitle
-
 
 \section{Introduction}
 Our neural network assignment went a little beyond the default assignment. We really wanted to know: what really happens when you change alpha, and when you change the number of neurons? As a result, we ended up re-discovering a method of training, the use of a validation set.
 \subsection{Motives} One of the topics discussed in class was overfitting and under fitting. We want to visualize this as its happening on a real dataset. We have two variables we're interested in: number of neurons, and the value of alpha. Alpha is the learning rate of the neural net, and the number of neurons is the number of neurons in the hidden layer of the network.  Both of these settings should have some effect on the fitting of the dataset.
-\section{Experimental procedure}
+\section{Procedure}
 After training on half the data set (Simple Generalization method, as discussed in the assignment), we would get the error on the testing set. 
 All tests were done on the supplied Wine training set using the the Simple Generalization method discussed in the homework. 
-
 \section{Results}
 
 \section{Conclusion}
@@ -37,6 +44,6 @@ One of the interesting results was the behavior of overfitting. There appears to
 
 
 %\fbox{\includegraphics[page=3,scale=0.4]{./experiments/AlphaNeurons.pdf}}
-\includegraphics[scale=0.4]{{alpha0.1Neurons1-12}.png}
+%\includegraphics[scale=0.4]{{alpha0.1Neurons1-12}.png}
 
 \end{document}  
