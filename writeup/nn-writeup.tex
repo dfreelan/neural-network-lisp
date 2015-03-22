@@ -4,7 +4,7 @@
         Department of Computer Science\\
         George Mason University\\
             \and
-        David Feelan\\
+        David Freelan\\
         Department of Computer Science\\
         George Mason University\\
 }
@@ -31,11 +31,14 @@
 \maketitle
 
 \section{Introduction}
-Our neural network assignment went a little beyond the default assignment. We really wanted to know: what really happens when you change alpha, and when you change the number of neurons? As a result, we ended up re-discovering a method of training, the use of a validation set.
+This project report details our experiments with changing various Neural Network parameters and the effects those modifications had upon the ability of the Neural Network to converge to a solution. Our neural network assignment went a little beyond the default assignment. We really wanted to know: what really happens when you change alpha, and when you change the number of neurons? As a result, we ended up re-discovering a method of training, the use of a validation set.
+
 \subsection{Motives} One of the topics discussed in class was overfitting and under fitting. We want to visualize this as its happening on a real dataset. We have two variables we're interested in: number of neurons, and the value of alpha. Alpha is the learning rate of the neural net, and the number of neurons is the number of neurons in the hidden layer of the network.  Both of these settings should have some effect on the fitting of the dataset.
+
 \section{Procedure}
 After training on half the data set (Simple Generalization method, as discussed in the assignment), we would get the error on the testing set. 
 All tests were done on the supplied Wine training set using the the Simple Generalization method discussed in the homework. 
+
 \section{Results}
 
 \section{Conclusion}
@@ -46,4 +49,6 @@ One of the interesting results was the behavior of overfitting. There appears to
 %\fbox{\includegraphics[page=3,scale=0.4]{./experiments/AlphaNeurons.pdf}}
 %\includegraphics[scale=0.4]{{alpha0.1Neurons1-12}.png}
 
-\end{document}  
+\end{document} 
+
+(alpha - the learning rate - and the number of hidden nodes) 
