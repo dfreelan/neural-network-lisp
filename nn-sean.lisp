@@ -548,8 +548,8 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 (print (concatenate 'string "Karl" (format nil "blah~S"  2)))
 (setf *debug* nil)
 
-(loop for neurons in '(6) do(progn
-	(loop for alpha in '(.10) do(progn
+(loop for neurons in '(12 13) do(progn
+	(loop for alpha in '(.005 0.01 0.02 0.04 0.06 0.1 0.15 0.2 0.5) do(progn
 		;;(print alpha)
 		(dotimes (i 50)
 			(simple-generalization (subseq (convert-datum *set*) 0 (- (floor (length *set*) 2.0) 1)) (subseq (convert-datum *set*) (floor (length *set*) 2.0) (- (length *set*) 1)) neurons alpha 1 1000)
