@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  23 MAR 2015 19:08
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  23 MAR 2015 19:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -187,14 +187,14 @@ File: Classification-alpha0.1Neurons2-6-13.png Graphic file (type png)
 
 <use Classification-alpha0.1Neurons2-6-13.png>
 Package pdftex.def Info: Classification-alpha0.1Neurons2-6-13.png used on input
- line 57.
+ line 68.
 (pdftex.def)             Requested size: 346.89621pt x 280.91006pt.
 
 <Classification_6_neurons_alpha0.05-0.1-0.5.png, id=3, 760.2804pt x 615.7404pt>
 File: Classification_6_neurons_alpha0.05-0.1-0.5.png Graphic file (type png)
 <use Classification_6_neurons_alpha0.05-0.1-0.5.png>
 Package pdftex.def Info: Classification_6_neurons_alpha0.05-0.1-0.5.png used on
- input line 64.
+ input line 75.
 (pdftex.def)             Requested size: 346.89621pt x 280.95154pt.
  [1
 
@@ -332,11 +332,11 @@ Overfull \hbox (22.31653pt too wide) in paragraph at lines 423--424
 Here is how much of TeX's memory you used:
  3750 strings out of 493315
  52530 string characters out of 6137904
- 387827 words of memory out of 5000000
+ 388827 words of memory out of 5000000
  7171 multiletter control sequences out of 15000+600000
  9510 words of font info for 33 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 38i,6n,43p,658b,1853s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,6n,43p,622b,1853s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2013/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2013/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2013/texmf
@@ -347,7 +347,7 @@ st/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2013/texmf-dist
 onts/type1/public/amsfonts/cm/cmsl10.pfb></usr/local/texlive/2013/texmf-dist/fo
 nts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2013/texmf-dist/fon
 ts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on nn-writeup.pdf (20 pages, 299505 bytes).
+Output written on nn-writeup.pdf (20 pages, 299668 bytes).
 PDF statistics:
  110 PDF objects out of 1000 (max. 8388607)
  74 compressed objects within 1 object stream
