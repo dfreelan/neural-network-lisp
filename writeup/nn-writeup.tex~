@@ -38,6 +38,12 @@
 \maketitle
 
 \section{Introduction}
+An artificial neural network (ANN, or NN) is a statistical learning algorithm based (loosely) on the characteristics of the human brain.
+The NN accepts a fixed number of inputs and calculates a fixed number of numeric outputs.
+A typical feature of a NN is a layer of unobservable, or hidden, units. 
+These units are called nodes or neurons.
+Input nodes are connected to hidden or output nodes by weight values which modify the value of each subsequent node.
+
 This project report details our experiments in changing various Neural Network parameters and
 the effects those modifications had upon the ability of the Neural Network to converge to a solution.
 Our neural network assignment went a little beyond the default assignment.
