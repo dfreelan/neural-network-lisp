@@ -59,7 +59,7 @@ After training the neural network, the testing data was applied and the realized
 All tests were done on the supplied Voting Records training set using the the Simple Generalization method discussed in the homework. 
 
 \section{Results}
-The accumulated error for three different hidden node widths may be seen in Figure \re{fig:Neurons}.
+The accumulated error for three different hidden node widths may be seen in Figure \ref{fig:Neurons}.
 These three neural networks - with 2, 6 and 13 neurons - were run using a constant alpha = 0.1. 
 
 
