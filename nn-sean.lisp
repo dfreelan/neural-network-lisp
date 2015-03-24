@@ -31,7 +31,7 @@
 ;;
 ;;
 (setf *random-state* (make-random-state t))
-(defparameter *debug* t)
+(defparameter *debug* nil)
 (defparameter *verify* t)
 (defparameter *a-good-minimum-error* 1.0e-9)
 
@@ -359,6 +359,7 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 			 (let ((layer-outputs (forward-propagate (first (nth a testing-data)) layers )))	
 				(dprint (setf total-error (+ total-error (net-error (first (second (second layer-outputs))) (first (second (nth a testing-data)))))) "intermediate total error accumulating: simple-general"))))
 	(dprint (setf *all-errors* (append *all-errors* (list (float (/ total-error (length testing-data)))))) "growing *all-errors* :")))
+
 ;; For this function, you should pass in the datum just like it's defined
 ;; in the example problems below (that is, not in the "column vector" format
 ;; used by NET-BUILD.  Of course, if you need to call NET_BUILD from this function
@@ -373,31 +374,30 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 ;;the average error among the samples in the second half.  Don't print any errors,
 ;;and use a modulo of MAX-ITERATIONS."
 (defun simple-generalization (training-set testing-set num-hidden-units alpha initial-bounds max-iterations)
-	;;(dprint training-set "training set:")
-	;;(dprint testing-set "testing set:")
-	;;(print (forward-propagate (first (first (convert-datum *xor*))) (net-build (convert-datum *xor*) 3 .2 9 90 2)))
-	;;net-build (datum num-hidden-units alpha initial-bounds max-iterations modulo &optional print-all-errors)
-	;;(setf *debug* t)
-	(let ((total-error 0) (layers (net-build training-set num-hidden-units alpha initial-bounds max-iterations 1)))
-		(loop for i from 1 to max-iterations do(progn
-			;;(print i )
-			;;(print max-iterations)
+
+	(let ((iteration-num 0) (max-error 0) (total-error 0) (layers (net-build training-set num-hidden-units alpha initial-bounds max-iterations 1)))
+		(loop while (and (< iteration-num max-iterations) (>  *a-good-minimum-error*  max-error) ) do(progn
+		;;loop for i from 1 to max-iterations doprogn
+			(setf max-error 0)
 			(setf total-error 0) 
+			(incf iteration-num)
 			(shuffle training-set)
-			(dprint i "looping:")
+			;;(print iteration-num)
 			 (setf total-error (first (last (do-statistics layers testing-set))))
 		
 			;;train on half the data
 			 (loop for a from 0 to (- (length training-set) 1) do(progn
 				 (let ( (layer-outputs (forward-propagate (first (nth a training-set )) layers )))
+					;;keep track of max-error
+					(if (> (net-error (first (second (second layer-outputs))) (first (second (nth a training-set)))) max-error)
+						(setf max-error (net-error (first (second (second layer-outputs))) (first (second (nth a training-set)))))
+					)
 					(dprint (setf layers (back-propagate 
 					 		(dprint layer-outputs "supplied layer outputs to back-prop:") layers (second (nth a training-set)) alpha)) "resulting layers after back-prop"))))))
 
 		(dprint (setf total-error (first (last (do-statistics layers testing-set)))) "total error after testing")
-		(/ total-error (length training-set))));;doesnt mean anything right now
- 	
-	;;need to get num inputs, num outputs from datum.
-	;;let layer-datum 
+		total-error));;this is average square error being returned
+
 (defun full-data-training (datum num-hidden-units alpha initial-bounds max-iterations)
 	
 	;;(print (forward-propagate (first (first (convert-datum *xor*))) (net-build (convert-datum *xor*) 3 .2 9 90 2)))
@@ -475,8 +475,6 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 
 ;;; Load the Test Data from an erternal file === MUCH MORE COVENIENT than leaving it here!
 (load "./nn-test.lisp")
-(defparameter *set* *voting-records*)
-
 
 (defun test-cases ()
 	(let ((temp *debug*))
@@ -527,56 +525,33 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 
 |#
 
+(defparameter *set* *voting-records*)
 
-;;test cases for each function
+(defun base-assignment ()
+	(setf *set* *voting-records*)
+	(setf *set* (scale-datum *set*))
+	(print "average total error on testing set VOTING-RECORDS (simple generalization)")
+	(print (simple-generalization (subseq (convert-datum *set*) 0 (- (floor (length *set*) 2.0) 1)) (subseq (convert-datum *set*) (floor (length *set*) 2.0) (- (length *set*) 1)) 6 .1 1 10000))
 
-;;main?
-(setf *debug* nil)
-(dprint "******** STARTING TEST CASES **********")
-;;(test-cases)
-(dprint "*nand* shuffle")
-(shuffle *nand*)
-;;;These seemed to be repeated up in test cases ... 
-;;(print "******** STARTING FULL-DATA-TRAINING **********")
-;;(print (full-data-training (convert-datum *xor*) 4 .2 1 1))
-;;(print "******** STARTING NET-BUILD **********")
-;;(print (net-build (convert-datum *xor*) 4 .2 9 90 2))
-;;(print "******** STARTING FORWARD-PROPOGATE **********")
-;;(print (forward-propagate (dprint (first (first (convert-datum *xor*))) "CONVERTED-DATA") (net-build (convert-datum *xor*) 3 .2 9 90 2)))
-(print *all-errors*)
-(print (format t "blah: ~S ~A"  2 "monkey feet"))
-(print (concatenate 'string "Karl" (format nil "blah~S"  2)))
-(setf *debug* nil)
 
-(loop for neurons in '(12 13) do(progn
-	(loop for alpha in '(.005 0.01 0.02 0.04 0.06 0.1 0.15 0.2 0.5) do(progn
-		;;(print alpha)
-		(dotimes (i 50)
-			(simple-generalization (subseq (convert-datum *set*) 0 (- (floor (length *set*) 2.0) 1)) (subseq (convert-datum *set*) (floor (length *set*) 2.0) (- (length *set*) 1)) neurons alpha 1 1000)
-			(print "getting a file out")	
-			(with-open-file (str  (print (format nil "AvgErr-alpha~ANeurons~ATrial~A.txt" alpha neurons i))
-						 :direction :output
-						 :if-exists :supersede
-						 :if-does-not-exist :create)
-			(format str  "~a" *all-errors*))
-			
-			(with-open-file (str  (print (format nil "Classification-alpha~ANeurons~ATrial~A.txt" alpha neurons i))
-						 :direction :output
-						 :if-exists :supersede
-						 :if-does-not-exist :create)
-			
-			(format str  "~a" *all-classification-errors*))
-			
-			(setf *all-classification-errors* '())
-			
-			(setf *all-errors* '()))
-		;;(print alpha)
-
-	))))
+	(setf *set* *wine*)
+	(setf *set* (scale-datum *set*))
+	(print "average total error on testing set WINE (simple generalization)")
+	(print (simple-generalization (subseq (convert-datum *set*) 0 (- (floor (length *set*) 2.0) 1)) (subseq (convert-datum *set*) (floor (length *set*) 2.0) (- (length *set*) 1)) 6 .1 1 10000))
 	
-  ;;(print "simple-general training test, should print out final average error hopefully close to zero")
-  ;;(print (simple-generalization (convert-datum *voting-records*) 4 .02 1 1000))
-		
+	
+	(setf *set* *mpg*)
+	(setf *set* (scale-datum *set*))
+	(print "average total error on testing set MPG (simple generalization)")
+	(print (simple-generalization (subseq (convert-datum *set*) 0 (- (floor (length *set*) 2.0) 1)) (subseq (convert-datum *set*) (floor (length *set*) 2.0) (- (length *set*) 1)) 6 .1 1 10000))
+
+
+	
+	(print ""))
+(base-assignment)
+
+	
+	
 
 (dprint "HELLO: this is the end. Goodbye.")
 
