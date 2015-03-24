@@ -12,6 +12,7 @@
 
 \documentclass[11pt,letterpaper]{article}
 %\usepackage[letterpaper,margin=0.75in]{geometry}
+\usepackage{mathtools}
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{listings}
@@ -66,8 +67,11 @@ All tests were done on the supplied Voting Records training set using the the Si
 
 \section{Results}
 The accumulated error for three different hidden node widths may be seen in Figure \ref{fig:Neurons}.
-These three neural networks - with 2, 6 and 13 neurons - were run using a constant alpha = 0.1. 
-
+These three neural networks - with 2, 6 and 13 neurons - were run using a constant $\alpha = 0.1$. 
+In Figure \ref{fig:Alphas}, the effect that different learning rates ($\alpha$) has on the accumulated error rates can be seen.
+For a Hidden Layer of 6 neurons, $\alpha = 0.05$ shows a greater error before dropping off during later trials.
+This is consistent with ones intuition that one would expect to have more errors from a slow learner.
+However, for $\alpha = 0.5$, the NN learns a little too quickly and begins to overfit the data during later trials of the input data.
 
 \begin{figure}
 \begin{center}
