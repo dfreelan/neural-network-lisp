@@ -12,6 +12,7 @@
 
 \documentclass[11pt,letterpaper]{article}
 %\usepackage[letterpaper,margin=0.75in]{geometry}
+\usepackage{mathtools}
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{listings}
@@ -38,6 +39,12 @@
 \maketitle
 
 \section{Introduction}
+An artificial neural network (ANN, or NN) is a statistical learning algorithm based (loosely) on the characteristics of the human brain.
+The NN accepts a fixed number of inputs and calculates a fixed number of numeric outputs.
+A typical feature of a NN is a layer of unobservable, or hidden, units. 
+These units are called nodes or neurons.
+Input nodes are connected to hidden or output nodes by weight values which modify the value of each subsequent node.
+
 This project report details our experiments in changing various Neural Network parameters and
 the effects those modifications had upon the ability of the Neural Network to converge to a solution.
 Our neural network assignment went a little beyond the default assignment.
@@ -60,20 +67,23 @@ All tests were done on the supplied Voting Records training set using the the Si
 
 \section{Results}
 The accumulated error for three different hidden node widths may be seen in Figure \ref{fig:Neurons}.
-These three neural networks - with 2, 6 and 13 neurons - were run using a constant alpha = 0.1. 
-
+These three neural networks - with 2, 6 and 13 neurons - were run using a constant $\alpha = 0.1$. 
+In Figure \ref{fig:Alphas}, the effect that different learning rates ($\alpha$) has on the accumulated error rates can be seen.
+For a Hidden Layer of 6 neurons, $\alpha = 0.05$ shows a greater error before dropping off during later trials.
+This is consistent with ones intuition that one would expect to have more errors from a slow learner.
+However, for $\alpha = 0.5$, the NN learns a little too quickly and begins to overfit the data during later trials of the input data.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=4.8in]{{Classification-alpha0.1Neurons2-6-13}.png}
-\caption{\small \sl This figure shows results of Nobel prize winning importance.\label{fig:Neurons}} 
+\caption{\small \sl Accumulated error across training/testing runs. More hidden nodes relates to less error ... quicker.\label{fig:Neurons}} 
 \end{center}
 \end{figure}
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=4.8in]{{Classification_6_neurons_alpha0.05-0.1-0.5}.png}
-\caption{\small \sl This figure shows results of more Nobel prize winning importance.\label{fig:Alphas}} 
+\caption{\small \sl Learning rate (alpha) has an effect on error, but learning too fast can lead to overfitting the data.\label{fig:Alphas}} 
 \end{center}
 \end{figure}
 
