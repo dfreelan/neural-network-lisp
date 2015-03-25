@@ -400,12 +400,6 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 
 (defun full-data-training (datum num-hidden-units alpha initial-bounds max-iterations)
 	
-	;;(print (forward-propagate (first (first (convert-datum *xor*))) (net-build (convert-datum *xor*) 3 .2 9 90 2)))
-	;;net-build (datum num-hidden-units alpha initial-bounds max-iterations modulo &optional print-all-errors)
-	;;(setf *debug* t)
-	(setf path (make-pathname :name "nn-sean.dat"))
-	(setf str  (open path :direction :output
-									 			:if-exists :supersede))
 	(let ((total-error 0) 
 				(layers (net-build datum num-hidden-units alpha initial-bounds max-iterations 1)))
 		(loop for i from 1 to max-iterations do(progn
@@ -422,12 +416,12 @@ ERROR = (1/2)(SIGMA(correct-output - output)^2)"
 								;;"supplied layer outputs to back-prop:") 
 								layers (second (nth a datum)) alpha))
 						;;"resulting layers after back-prop")
-					(format str "~A~%" (net-error (first (second (second layer-outputs))) (first (second (nth a datum))))) ;;there's got to be a better way to format this
+					;;(format str "~A~%" (net-error (first (second (second layer-outputs))) (first (second (nth a datum))))) ;;there's got to be a better way to format this
 					(dprint (setf total-error (+ total-error (net-error (first (second (second layer-outputs))) (first (second (nth a datum)))))) "intermediate total error accumulating") 
 					
 				)))))
 		(/ total-error (length datum)))
-	(close str))
+	)
 
 
 
@@ -528,6 +522,10 @@ can be fed into NET-LEARN.  Also adds a bias unit of 0.5 to the input."
 (defparameter *set* *voting-records*)
 
 (defun base-assignment ()
+	(print "xor average training error:")	
+	(print (full-data-training (convert-datum *xor*) 4 .2 1 1000))
+	
+	
 	(setf *set* *voting-records*)
 	(setf *set* (scale-datum *set*))
 	(print "average total error on testing set VOTING-RECORDS (simple generalization)")
